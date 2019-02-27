@@ -3,7 +3,9 @@ package com.yulich.titlebar.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+
 import androidx.annotation.DrawableRes;
+
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -39,7 +41,7 @@ public class TitleBar extends RelativeLayout {
         density = displayMetrics.density;
         screenWidth = displayMetrics.widthPixels;
 
-        int titleStrId, titeTextColor;
+        int titleStrId, titeTextColor, barStyle;
 
         if (attrs == null) {
             defaultBarHeight = getResources().getDimensionPixelSize(R.dimen.title_bar_height);
@@ -47,6 +49,7 @@ public class TitleBar extends RelativeLayout {
 
             titleStrId = 0;
             titeTextColor = getResources().getColor(R.color.color_white);
+            barStyle = 0;
         } else {
             {
                 int[] systemAttrs = {android.R.attr.layout_height};
@@ -86,6 +89,8 @@ public class TitleBar extends RelativeLayout {
                 titleStrId = ta.getResourceId(R.styleable.TitleBar_title_bar_text, 0);
 
                 titeTextColor = ta.getColor(R.styleable.TitleBar_title_bar_text_color, getResources().getColor(R.color.color_white));
+
+                barStyle = ta.getInteger(R.styleable.TitleBar_title_bar_style, 0);
 
                 ta.recycle();
             }
@@ -132,9 +137,16 @@ public class TitleBar extends RelativeLayout {
 
             tvTitle.setLayoutParams(layoutParams);
 
-            setAndroidStyle();
-
             addView(tvTitle, layoutParams);
+        }
+
+        switch (barStyle) {
+            case 0:
+                setAndroidStyle();
+                break;
+            case 1:
+                setIosStyle();
+                break;
         }
 
         tvTitle.setOnClickListener(new OnClickListener() {

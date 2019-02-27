@@ -5,6 +5,10 @@
         <attr name="title_bar_text_color" format="color" />
         <attr name="title_bar_color" format="color" />
         <attr name="title_bar_icon_size" format="dimension" />
+        <attr name="title_bar_style" format="integer">
+            <enum name="android" value="0" />
+            <enum name="ios" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="DefaultTitleBar">
