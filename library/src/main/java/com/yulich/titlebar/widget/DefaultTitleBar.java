@@ -3,13 +3,14 @@ package com.yulich.titlebar.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.DrawableRes;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yulich.titlebar.R;
+
+import androidx.annotation.DrawableRes;
 
 public class DefaultTitleBar extends TitleBar {
 
@@ -56,9 +57,14 @@ public class DefaultTitleBar extends TitleBar {
             ((ImageView) rightBtn).setImageResource(res);
     }
 
-    public void setRightBtnSrcAnimation(Drawable composedAnimation) {
+    public void setLeftBtnSrc(Drawable res) {
+        if (leftBtn instanceof ImageView)
+            ((ImageView) leftBtn).setImageDrawable(res);
+    }
+
+    public void setRightBtnSrc(Drawable res) {
         if (rightBtn instanceof ImageView)
-            ((ImageView) rightBtn).setImageDrawable(composedAnimation);
+            ((ImageView) rightBtn).setImageDrawable(res);
     }
 
     public void setLeftBtnText(String text) {

@@ -2,16 +2,11 @@ package com.yulich.titlebar.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Rect;
-
-import androidx.annotation.DrawableRes;
-
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yulich.titlebar.R;
+
+import androidx.annotation.DrawableRes;
 
 public class TitleBar extends RelativeLayout {
 
@@ -34,6 +31,8 @@ public class TitleBar extends RelativeLayout {
     protected final int layoutMarginInside;
     protected final int layoutMarginParent;
 
+    private final int mTextColor;
+
     public TitleBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -41,14 +40,14 @@ public class TitleBar extends RelativeLayout {
         density = displayMetrics.density;
         screenWidth = displayMetrics.widthPixels;
 
-        int titleStrId, titeTextColor, barStyle;
+        int titleStrId, barStyle;
 
         if (attrs == null) {
             defaultBarHeight = getResources().getDimensionPixelSize(R.dimen.title_bar_height);
             defaultIconSize = getResources().getDimensionPixelSize(R.dimen.title_bar_icon_size);
 
             titleStrId = 0;
-            titeTextColor = getResources().getColor(R.color.color_white);
+            mTextColor = getResources().getColor(R.color.color_white);
             barStyle = 0;
         } else {
             {
@@ -88,7 +87,7 @@ public class TitleBar extends RelativeLayout {
 
                 titleStrId = ta.getResourceId(R.styleable.TitleBar_title_bar_text, 0);
 
-                titeTextColor = ta.getColor(R.styleable.TitleBar_title_bar_text_color, getResources().getColor(R.color.color_white));
+                mTextColor = ta.getColor(R.styleable.TitleBar_title_bar_text_color, getResources().getColor(R.color.color_white));
 
                 barStyle = ta.getInteger(R.styleable.TitleBar_title_bar_style, 0);
 
@@ -101,17 +100,19 @@ public class TitleBar extends RelativeLayout {
 
         rightButtons = new LinearLayout(context);
         rightButtons.setId(R.id.title_bar_right);
+        rightButtons.setPadding(0, 0, layoutMarginInside, 0);
         rightButtons.setGravity(Gravity.CENTER_VERTICAL);
 
         leftButtons = new LinearLayout(context);
         leftButtons.setId(R.id.title_bar_left);
+        leftButtons.setPadding(layoutMarginInside, 0, 0, 0);
         leftButtons.setGravity(Gravity.CENTER_VERTICAL);
 
         tvTitle = new TextView(context);
         tvTitle.setId(R.id.title_bar_title);
         tvTitle.setGravity(Gravity.CENTER);
         tvTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        tvTitle.setTextColor(titeTextColor);
+        tvTitle.setTextColor(mTextColor);
         if (titleStrId > 0)
             tvTitle.setText(titleStrId);
 
@@ -193,7 +194,8 @@ public class TitleBar extends RelativeLayout {
                 }
             });
         } else {
-            rightButtons.addView(view, 0);
+            // rightButtons.addView(view, 0);
+            rightButtons.addView(view);
             view.setOnTouchListener(touchListenerOfBtn);
             view.setOnClickListener(new OnClickListener() {
                 @Override
@@ -202,7 +204,7 @@ public class TitleBar extends RelativeLayout {
                     if (titleBarListener != null) {
                         for (int i = 0; i < count; i++) {
                             if (v == rightButtons.getChildAt(i)) {
-                                titleBarListener.onTitleBarRightButtonsClick(v, count - i - 1);
+                                titleBarListener.onTitleBarRightButtonsClick(v, i);
                                 break;
                             }
                         }
@@ -234,25 +236,22 @@ public class TitleBar extends RelativeLayout {
 
         int count = leftButtons.getChildCount();
         if (count == 0) {
-            iv.setPadding(0, btnVerticalSpace, 0, btnVerticalSpace);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, defaultBarHeight);
-            params.setMargins(layoutMarginParent, 0, 0, 0);
-
+            iv.setPadding(layoutMarginInside, btnVerticalSpace, layoutMarginInside, btnVerticalSpace);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + 2 * layoutMarginInside, defaultBarHeight);
             iv.setLayoutParams(params);
 
+            /*
             Rect area = new Rect();
             area.top = 0;
             area.bottom = defaultBarHeight;
             area.left = 0;
-            area.right = layoutMarginParent + size + layoutMarginInside;
+            area.right = layoutMarginInside + size + layoutMarginInside;
             TouchDelegate delegate = new TouchDelegate(area, iv);
             leftButtons.setTouchDelegate(delegate);
+            */
         } else {
-            iv.setPadding(layoutMarginInside, btnVerticalSpace, 0, btnVerticalSpace);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + layoutMarginInside, defaultBarHeight);
-            params.setMargins(layoutMarginInside, 0, 0, 0);
+            iv.setPadding(layoutMarginInside, btnVerticalSpace, layoutMarginInside, btnVerticalSpace);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + 2 * layoutMarginInside, defaultBarHeight);
             iv.setLayoutParams(params);
         }
 
@@ -270,25 +269,22 @@ public class TitleBar extends RelativeLayout {
         int count = rightButtons.getChildCount();
 
         if (count == 0) {
-            iv.setPadding(0, btnVerticalSpace, 0, btnVerticalSpace);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, defaultBarHeight);
-            params.setMargins(0, 0, layoutMarginParent, 0);
+            iv.setPadding(layoutMarginInside, btnVerticalSpace, layoutMarginInside, btnVerticalSpace);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + 2 * layoutMarginInside, defaultBarHeight);
             iv.setLayoutParams(params);
 
+            /*
             Rect area = new Rect();
             area.top = 0;
             area.bottom = defaultBarHeight;
             area.left = count * (size + layoutMarginParent);
             area.right = area.left + layoutMarginParent + size + layoutMarginInside;
-
             TouchDelegate delegate = new TouchDelegate(area, iv);
             rightButtons.setTouchDelegate(delegate);
+            */
         } else {
-            iv.setPadding(0, btnVerticalSpace, layoutMarginInside, btnVerticalSpace);
-
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + layoutMarginInside, defaultBarHeight);
-            params.setMargins(0, 0, layoutMarginInside, 0);
+            iv.setPadding(layoutMarginInside, btnVerticalSpace, layoutMarginInside, btnVerticalSpace);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size + 2 * layoutMarginInside, defaultBarHeight);
             iv.setLayoutParams(params);
         }
 
@@ -312,36 +308,10 @@ public class TitleBar extends RelativeLayout {
 
         setBtnTextViewStyle(tv);
 
-        if (toLeft) {
-            if (leftButtons.getChildCount() == 0) {
-                LinearLayout.LayoutParams params
-                        = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, defaultBarHeight);
-                params.setMargins(layoutMarginInside, 0, 0, 0);
-                tv.setLayoutParams(params);
-            } else {
-                LinearLayout.LayoutParams params
-                        = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, defaultBarHeight);
-                params.setMargins(layoutMarginInside, 0, 0, 0);
-                tv.setLayoutParams(params);
-            }
-
-            tv.setPadding(layoutMarginInside, 0, 0, 0);
-        } else {
-            if (rightButtons.getChildCount() == 0) {
-                LinearLayout.LayoutParams params
-                        = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, defaultBarHeight);
-                params.setMargins(0, 0, layoutMarginInside, 0);
-                tv.setLayoutParams(params);
-            } else {
-                LinearLayout.LayoutParams params
-                        = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, defaultBarHeight);
-                params.setMargins(0, 0, layoutMarginInside, 0);
-                tv.setLayoutParams(params);
-            }
-
-            tv.setPadding(0, 0, layoutMarginInside, 0);
-        }
-
+        LinearLayout.LayoutParams params
+                = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, defaultBarHeight);
+        tv.setLayoutParams(params);
+        tv.setPadding(layoutMarginInside, 0, layoutMarginInside, 0);
 
         addBtn(tv, toLeft);
         return tv;
@@ -350,7 +320,7 @@ public class TitleBar extends RelativeLayout {
     private void setBtnTextViewStyle(TextView tv) {
         tv.setLines(1);
         tv.setGravity(Gravity.CENTER);
-        tv.setTextColor(getResources().getColor(R.color.color_white));
+        tv.setTextColor(mTextColor);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         // tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
     }
@@ -369,7 +339,7 @@ public class TitleBar extends RelativeLayout {
     private void setAndroidStyle() {
         LayoutParams layoutParams = (LayoutParams) tvTitle.getLayoutParams();
 
-        tvTitle.setPadding(layoutMarginParent, 0, 0, 0);
+        tvTitle.setPadding(layoutMarginInside, 0, 0, 0);
 
 
         layoutParams.addRule(RIGHT_OF, leftButtons.getId());
