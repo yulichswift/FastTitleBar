@@ -15,6 +15,6 @@ allprojects {
 ### Step 2. Add the dependency
 ```
 dependencies {
-    implementation 'com.github.yulichswift:FastTitleBar:1.0.0'
+    implementation 'com.github.yulichswift:FastTitleBar:1.0.1'
 }
 ```
